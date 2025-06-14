@@ -122,11 +122,11 @@ class CategoryForm extends StatefulWidget {
 class _CategoryFormState extends State<CategoryForm> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _titleController;
-  String? _svgContentRaw; // Contenido raw del SVG
-  String? _svgUrl; // URL del SVG en storage
+  String? _svgContentRaw;
+  String? _svgUrl;
   bool _submitting = false;
   bool _svgChanged = false;
-  String? _categoryId; // <-- Añadido para mantener el id
+  String? _categoryId;
 
   @override
   void initState() {
@@ -134,7 +134,7 @@ class _CategoryFormState extends State<CategoryForm> {
     _titleController = TextEditingController(text: widget.category?.title ?? '');
     _svgUrl = widget.category?.svgContent;
     _svgContentRaw = null;
-    _categoryId = widget.category?.id; // <-- Guarda el id original
+    _categoryId = widget.category?.id;
   }
 
   @override

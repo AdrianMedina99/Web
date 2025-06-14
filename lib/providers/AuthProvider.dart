@@ -8,12 +8,14 @@ class AuthProvider extends ChangeNotifier {
   String? _token;
   String? _userType;
   String? _email;
+  String? _id;
   bool _isLoading = false;
   String? _error;
 
   String? get token => _token;
   String? get userType => _userType;
   String? get email => _email;
+  String? get id => _id;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -26,6 +28,7 @@ class AuthProvider extends ChangeNotifier {
     final savedToken = prefs.getString('auth_token');
     if (savedToken != null) {
       _token = savedToken;
+      _id = prefs.getString('auth_id');
       apiService.setToken(_token);
       notifyListeners();
     }
@@ -51,11 +54,14 @@ class AuthProvider extends ChangeNotifier {
         _token = data['token'];
         _userType = data['userType'];
         _email = data['email'];
+        _id = data['id'];
         apiService.setToken(_token);
 
-        // Guarda el token en localStorage
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', _token!);
+        if (_id != null) {
+          await prefs.setString('auth_id', _id!);
+        }
 
         _isLoading = false;
         notifyListeners();
@@ -78,11 +84,12 @@ class AuthProvider extends ChangeNotifier {
     _token = null;
     _userType = null;
     _email = null;
+    _id = null;
     apiService.setToken(null);
 
-    // Elimina el token de localStorage
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
+    await prefs.remove('auth_id');
 
     notifyListeners();
   }

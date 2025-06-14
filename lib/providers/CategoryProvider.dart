@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import '../api_service.dart';
 
@@ -56,7 +55,6 @@ class CategoryProvider extends ChangeNotifier {
     error = null;
     notifyListeners();
     try {
-      // Subir SVG a Firebase Storage y obtener la URL
       final svgUrl = await apiService.uploadSvgToFirebaseStorage(
         svgContent: svgRawContent,
         fileName: 'icono-${DateTime.now().millisecondsSinceEpoch}.svg',
@@ -79,7 +77,6 @@ class CategoryProvider extends ChangeNotifier {
     error = null;
     notifyListeners();
     try {
-      // Subir SVG a Firebase Storage y obtener la URL
       final svgUrl = await apiService.uploadSvgToFirebaseStorage(
         svgContent: svgRawContent,
         fileName: 'icono-${DateTime.now().millisecondsSinceEpoch}.svg',

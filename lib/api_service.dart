@@ -113,41 +113,17 @@ class ApiService {
     }
   }
 
-  // Actualizar un usuario de negocio con foto
-  Future<String> updateBusinessUserWithPhoto(String id, Map<String, dynamic> userData, File? photoFile) async {
-    try {
-      var request = http.MultipartRequest('PUT', Uri.parse('$baseUrl/api/businessUsers/$id'));
 
-      // Agregar token de autorización
-      request.headers.addAll({
-        'Authorization': 'Bearer $_token',
-      });
-
-      // Convertir userData a formato JSON y agregarlo como parte de la solicitud
-      request.files.add(http.MultipartFile.fromString(
-        'user',
-        jsonEncode(userData),
-        contentType: MediaType('application', 'json'),
-      ));
-
-      // Si hay una foto para subir, agregarla
-      if (photoFile != null) {
-        request.files.add(await http.MultipartFile.fromPath(
-          'photo',
-          photoFile.path,
-        ));
-      }
-
-      var streamedResponse = await request.send();
-      var response = await http.Response.fromStream(streamedResponse);
-
-      if (response.statusCode == 200) {
-        return response.body;
-      } else {
-        throw Exception('Error al actualizar usuario de negocio: ${response.body}');
-      }
-    } catch (e) {
-      throw Exception('Error en la solicitud: $e');
+// Banear o desbanear usuario de negocio
+  Future<String> updateBusinessBan(String id) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/api/businessUsers/ban/$id'),
+      headers: _getHeaders(),
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Error al banear usuario de negocio: ${response.body}');
     }
   }
 
@@ -211,41 +187,16 @@ class ApiService {
     }
   }
 
-  // Actualizar un usuario cliente con foto
-  Future<String> updateClientUserWithPhoto(String id, Map<String, dynamic> userData, File? photoFile) async {
-    try {
-      var request = http.MultipartRequest('PUT', Uri.parse('$baseUrl/api/clientUsers/$id'));
-
-      // Agregar token de autorización
-      request.headers.addAll({
-        'Authorization': 'Bearer $_token',
-      });
-
-      // Convertir userData a formato JSON y agregarlo como parte de la solicitud
-      request.files.add(http.MultipartFile.fromString(
-        'user',
-        jsonEncode(userData),
-        contentType: MediaType('application', 'json'),
-      ));
-
-      // Si hay una foto para subir, agregarla
-      if (photoFile != null) {
-        request.files.add(await http.MultipartFile.fromPath(
-          'photo',
-          photoFile.path,
-        ));
-      }
-
-      var streamedResponse = await request.send();
-      var response = await http.Response.fromStream(streamedResponse);
-
-      if (response.statusCode == 200) {
-        return response.body;
-      } else {
-        throw Exception('Error al actualizar usuario cliente: ${response.body}');
-      }
-    } catch (e) {
-      throw Exception('Error en la solicitud: $e');
+  // Banear o desbanear usuario cliente
+  Future<String> updateClientBan(String id) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/api/clientUsers/ban/$id'),
+      headers: _getHeaders(),
+    );
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Error al banear usuario cliente: ${response.body}');
     }
   }
 
@@ -420,5 +371,57 @@ class ApiService {
       throw Exception('Error al subir SVG a Firebase Storage: ${response.body}');
     }
   }
-}
 
+  // =========
+  // Reports
+  // =========
+
+  // Obtener un reporte por ID
+  Future<Map<String, dynamic>> getReport(String id) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/reports/$id'),
+      headers: _getHeaders(),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Error al obtener el reporte: ${response.body}');
+    }
+  }
+
+  // Obtener todos los reportes
+  Future<List<dynamic>> getAllReports() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/reports'),
+      headers: _getHeaders(),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Error al obtener los reportes: ${response.body}');
+    }
+  }
+
+  // Actualizar un reporte
+  Future<void> updateReport(String id, Map<String, dynamic> reportData) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/api/reports/$id'),
+      headers: _getHeaders(),
+      body: jsonEncode(reportData),
+    );
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Error al actualizar el reporte: ${response.body}');
+    }
+  }
+
+  // Eliminar un reporte
+  Future<void> deleteReport(String id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/api/reports/$id'),
+      headers: _getHeaders(),
+    );
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Error al eliminar el reporte: ${response.body}');
+    }
+  }
+}

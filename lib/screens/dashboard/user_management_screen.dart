@@ -13,14 +13,13 @@ class UserManagementScreen extends StatefulWidget {
 
 class _UserManagementScreenState extends State<UserManagementScreen> {
   String selectedRole = "Todos";
-  // Opciones de roles para el filtro
   final List<String> roleOptions = ["Todos", "CLIENT", "BUSSINES", "ADMIN"];
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: const SideMenu(), // Para móviles
+        drawer: const SideMenu(),
         body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -37,7 +36,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                   children: [
                     Header(),
                     const SizedBox(height: 60),
-                    // Filtro por role
+
                     Row(
                       children: [
                         const Text("Filtrar por Rol: "),
@@ -59,7 +58,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    // Pasar el filtro al widget RecentUsers
                     TableUsers(filterRole: selectedRole),
                   ],
                 ),

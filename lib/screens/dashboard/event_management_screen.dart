@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../constants.dart';
 import '../main/components/side_menu.dart';
 import 'components/header.dart';
 import 'components/table_events.dart';
+import '../../providers/CategoryProvider.dart';
 
 class EventManagementScreen extends StatefulWidget {
   const EventManagementScreen({Key? key}) : super(key: key);
@@ -13,16 +15,29 @@ class EventManagementScreen extends StatefulWidget {
 
 class _EventManagementScreenState extends State<EventManagementScreen> {
   String selectedCategoria = "Todos";
-  String selectedSitio = "Todos";
 
-  final List<String> categoriaOptions = ["Todos", "Gaming", "Deporte"];
-  final List<String> sitioOptions = ["Todos", "Sevilla"];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<CategoryProvider>(context, listen: false).fetchCategories();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+    final categoriaOptions = [
+      "Todos",
+      ...categoryProvider.categories.map((cat) => cat.title).toList()
+    ];
+    final categoryTitleToId = {
+      for (var cat in categoryProvider.categories) cat.title: cat.id
+    };
+
     return SafeArea(
       child: Scaffold(
-        drawer: const SideMenu(), // Para móviles
+        drawer: const SideMenu(),
         body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -36,7 +51,6 @@ class _EventManagementScreenState extends State<EventManagementScreen> {
                   children: [
                     const Header(),
                     const SizedBox(height: 60),
-                    // Filtros
                     Row(
                       children: [
                         const Text("Filtrar por Categoría: "),
@@ -55,28 +69,14 @@ class _EventManagementScreenState extends State<EventManagementScreen> {
                             });
                           },
                         ),
-                        const SizedBox(width: 40),
-                        const Text("Filtrar por Sitio: "),
-                        const SizedBox(width: 10),
-                        DropdownButton<String>(
-                          value: selectedSitio,
-                          items: sitioOptions
-                              .map((sitio) => DropdownMenuItem(
-                                    value: sitio,
-                                    child: Text(sitio),
-                                  ))
-                              .toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedSitio = value!;
-                            });
-                          },
-                        ),
                       ],
                     ),
                     const SizedBox(height: 20),
-                    // Se pasa el filtro al widget RecentEvents
-                    TableEvents(filterCategoria: selectedCategoria, filterSitio: selectedSitio),
+                    TableEvents(
+                      filterCategoria: selectedCategoria == "Todos"
+                          ? "Todos"
+                          : (categoryTitleToId[selectedCategoria] ?? "Todos"),
+                    ),
                   ],
                 ),
               ),
